@@ -91,6 +91,8 @@ include_directories(
          AttributeLookup.srv
          AttributeQuery.srv
          GeneralQuery.srv
+         AttributeDictionary.srv
+         DebugQuery.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -156,6 +158,8 @@ include_directories(
 ## Declare a C++ library
  add_library(${PROJECT_NAME}
    src/${PROJECT_NAME}/actuatorcontroller_ros.cpp
+         src/${PROJECT_NAME}/actuatorcontroller_rosparam.cpp
+         src/${PROJECT_NAME}/actuatorcontroller_rosservice.cpp
  )
 
 ## Specify libraries to link a library or executable target against

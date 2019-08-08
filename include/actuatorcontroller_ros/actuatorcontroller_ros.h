@@ -31,6 +31,8 @@
 #include "actuatorcontroller_ros/AttributeLookup.h"
 #include "actuatorcontroller_ros/AttributeQuery.h"
 #include "actuatorcontroller_ros/GeneralQuery.h"
+#include "actuatorcontroller_ros/AttributeDictionary.h"
+#include "actuatorcontroller_ros/DebugQuery.h"
 
 // std stuff
 #include <map>
@@ -49,6 +51,19 @@ public:
 
     void releaseJointStates();
 
+    void updateROSParam();
+
+    void updateROSParam(uint8_t joint_id);
+
+
+
+
+
+
+private:
+
+
+
     //Subscriber Callback
     void subscribeChangeAttribute(const actuatorcontroller_ros::ActuatorAttribute & msg);
 
@@ -65,20 +80,41 @@ public:
     void subscribeSetControlMode(const actuatorcontroller_ros::ActuatorModes & msg);
 
     bool serviceAttributeQuery(actuatorcontroller_ros::AttributeQueryRequest & req,
-                              actuatorcontroller_ros::AttributeQueryResponse & res );
+                               actuatorcontroller_ros::AttributeQueryResponse & res );
 
     bool serviceGeneralQuery(actuatorcontroller_ros::GeneralQueryRequest & req,
-                            actuatorcontroller_ros::GeneralQueryResponse & res );
+                             actuatorcontroller_ros::GeneralQueryResponse & res );
 
-    bool serviceAttributeLookup(actuatorcontroller_ros::AttributeLookupRequest & req,
-                               actuatorcontroller_ros::AttributeLookupResponse & res );
 
-private:
+    bool serviceAttributeDictionary(actuatorcontroller_ros::AttributeDictionaryRequest & req,
+                                actuatorcontroller_ros::AttributeDictionaryResponse & res );
+
+
+    bool serviceDebugQuery(actuatorcontroller_ros::DebugQueryRequest & req,
+                                                   actuatorcontroller_ros::DebugQueryResponse & res );
+
+
 
 
     // private handles
 	ros::NodeHandle nh;
     ActuatorController *m_pController;
+
+    // Upload all the ros parameters to the server;
+    void initializeROSParam();
+
+    // Upload one ROSParam to the server;
+    void initializeROSParam(uint8_t joint_id);
+
+    // clear all the ros parameters in the server
+    void clearROSParam();
+
+    // clear the ros parameters of one actuator
+    void clearROSParam(uint8_t joint_id);
+
+    void populateAttributeMap();
+
+    void populateDictionary();
 
 
     // publisher for current actuator information
@@ -96,11 +132,19 @@ private:
 	ros::ServiceServer m_serAttributeQuery;
 	ros::ServiceServer m_serGeneralQuery;
 	ros::ServiceServer m_serAttributeLookup;
+    ros::ServiceServer m_serAttributeDictionary;
 
 
 	// temp message
 
 
+	// param variable
+	std::string m_sINNFOS;
+    std::string m_sActuator;
+    std::map<std::string , ActuatorAttribute > m_mChangableDoubleAttribute;
+    std::map<std::string , ActuatorAttribute > m_mChangableIntAttribute;
+    std::map<std::string , std::string > m_mAttributeDictionary;
+    std::map<std::string , ActuatorMode > m_mActuatorMode;
 
 
 }; //class

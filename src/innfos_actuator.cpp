@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
 
 
         INNFOS_ptr->releaseJointStates();
+        INNFOS_ptr->updateROSParam();
 
         ros::spinOnce();
 

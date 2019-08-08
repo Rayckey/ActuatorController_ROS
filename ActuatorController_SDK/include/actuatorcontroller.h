@@ -69,6 +69,18 @@ public:
     double getActuatorAttribute(uint64_t longId,Actuator::ActuatorAttribute attrId)const;
     void setActuatorAttribute(uint8_t id,Actuator::ActuatorAttribute attrId,double value,const string & ipAddress="");
     double getActuatorAttribute(uint8_t id,Actuator::ActuatorAttribute attrId,const string & ipAddress="")const;
+
+    bool setActuatorAttributeWithACK(uint64_t longId, ActuatorAttribute attrId, double value);
+
+    /**
+     * @brief 将ip地址字符串和id转换成长id
+     * @param ipAddress 目标ip地址字符串
+     * @param id id
+     * @return 对应长id
+     * @warning 该接口仅支持以太网的通信方式
+     */
+    static uint64_t toLongId(uint8_t id,const string &ipAddress="");
+
     /**
      * @brief 获取控制器对象
      * @return 控制器对象
@@ -964,6 +976,9 @@ public:
     void receiveQuaternion(uint64_t nIMUId,double w,double x,double y,double z);
     void requestLossRatio();
     void receiveLossRatio(uint64_t nIMUId,uint32_t receive,uint32_t lost);
+
+
+
 #endif
 
 private:
@@ -972,7 +987,6 @@ private:
     void switchCalibration(uint64_t longId,uint8_t nValue);
     void startCalibration(uint64_t longId);
     void sendCmd(uint64_t longId,uint16_t cmdId,uint32_t value);
-    bool setActuatorAttributeWithACK(uint64_t longId, ActuatorAttribute attrId, double value);
     void clearError(uint64_t longId);
     void reconnect(uint64_t longId);
     vector<uint16_t> getErrorHistory(uint64_t longId);
@@ -1008,14 +1022,7 @@ private:
     void startLog();
     void stopLog();
     uint32_t ipToUint(const string & ipAddress);
-    /**
-     * @brief 将ip地址字符串和id转换成长id
-     * @param ipAddress 目标ip地址字符串
-     * @param id id
-     * @return 对应长id
-     * @warning 该接口仅支持以太网的通信方式
-     */
-    static uint64_t toLongId(uint8_t id,const string &ipAddress="");
+
     /**
      * @brief 将长id转换成ip地址字符串
      * @param longId 长id
