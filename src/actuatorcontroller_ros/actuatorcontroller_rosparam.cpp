@@ -138,6 +138,10 @@ void ActuatorController_ROS::updateROSParam(uint8_t joint_id){
 //            }
 //        }
 
+
+        //
+
+
     }
 
 }
@@ -182,8 +186,8 @@ void ActuatorController_ROS::populateAttributeMap(){
 
 
 
-    m_mChangableIntAttribute["MODE_ID"] = ActuatorAttribute::MODE_ID;
-    m_mChangableIntAttribute["DEVICE_ID"] = ActuatorAttribute::DEVICE_ID;
+//    m_mChangableIntAttribute["MODE_ID"] = ActuatorAttribute::MODE_ID;
+//    m_mChangableIntAttribute["DEVICE_ID"] = ActuatorAttribute::DEVICE_ID;
 
 
 }

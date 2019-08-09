@@ -32,7 +32,6 @@ int main(int argc, char **argv) {
 
   ros::Timer timer1 = nh.createTimer(ros::Duration(0.005), actuator_event_callback);
 
-//  ros::Timer timer3 = nh.createTimer(ros::Duration(0.01), &ActuatorController_ROS::unleaseCallback , INNFOS_ptr);
 
     while (ros::ok())
     {
@@ -46,7 +45,7 @@ int main(int argc, char **argv) {
 //        loop_rate.sleep();
 //        ++count;
 
-        ros::Duration(0.01).sleep();
+        ros::Duration(0.005).sleep();
     }
 
 //  ros::spin();

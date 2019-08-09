@@ -40,16 +40,29 @@ ActuatorController_ROS::ActuatorController_ROS(){
     m_serGeneralQuery  = nh.advertiseService("/INNFOS/GeneralQuery", &ActuatorController_ROS::serviceGeneralQuery, this);
 //    m_serAttributeLookup = nh.advertiseService("/INNFOS/AttributeLookup", &ActuatorController_ROS::serviceAttributeLookup, this);
 
-
+    m_serTriviaQuery  = nh.advertiseService("/INNFOS/TriviaQuery", &ActuatorController_ROS::serviceTriviaQuery, this);
+    m_serDebugQuery  = nh.advertiseService("/INNFOS/DebugQuery", &ActuatorController_ROS::serviceDebugQuery, this);
+    m_serAttributeDictionary = nh.advertiseService("/INNFOS/Dictionary", &ActuatorController_ROS::serviceAttributeDictionary, this);
+    m_serIDChange = nh.advertiseService("/INNFOS/IDChange", &ActuatorController_ROS::serviceIDModify,this);
+    m_serParametersSave = nh.advertiseService("/INNFOS/ParametersSave", &ActuatorController_ROS::serviceParameterSave, this);
+    m_mZeroReset = nh.advertiseService("/INNFOS/ZeroReset", &ActuatorController_ROS::serviceZeroReset, this);
 
     // populate some maps and servers
     populateAttributeMap();
-    m_mActuatorMode["Mode_Cur"] = ActuatorMode::Mode_Cur;
-    m_mActuatorMode["Mode_Pos"] = ActuatorMode::Mode_Pos;
-    m_mActuatorMode["Mode_Vel"] = ActuatorMode::Mode_Vel;
-    m_mActuatorMode["Mode_Profile_Pos"] = ActuatorMode::Mode_Profile_Pos;
-    m_mActuatorMode["Mode_Profile_Vel"] = ActuatorMode::Mode_Profile_Vel;
-    m_mActuatorMode["Mode_Homing"] = ActuatorMode::Mode_Homing;
+    populateDictionary();
+    m_mActuatorMode[1] = ActuatorMode::Mode_Cur;
+    m_mActuatorMode[2] = ActuatorMode::Mode_Pos;
+    m_mActuatorMode[3] = ActuatorMode::Mode_Vel;
+    m_mActuatorMode[4] = ActuatorMode::Mode_Profile_Pos;
+    m_mActuatorMode[5] = ActuatorMode::Mode_Profile_Vel;
+    m_mActuatorMode[6] = ActuatorMode::Mode_Homing;
+
+    m_mActuatorModeReverse[ActuatorMode::Mode_Cur] = 1;
+    m_mActuatorModeReverse[ActuatorMode::Mode_Pos] = 2;
+    m_mActuatorModeReverse[ActuatorMode::Mode_Vel] = 3;
+    m_mActuatorModeReverse[ActuatorMode::Mode_Profile_Pos] = 4;
+    m_mActuatorModeReverse[ActuatorMode::Mode_Profile_Vel] = 5;
+    m_mActuatorModeReverse[ActuatorMode::Mode_Homing] = 6;
 
     initializeROSParam();
 
@@ -178,11 +191,15 @@ void ActuatorController_ROS::subscribeSetControlMode(const actuatorcontroller_ro
             temp_vec.push_back(msg.JointIDs[j]);
         }
 
-
     }else {
         temp_vec = m_pController->getActuatorIdArray();
     }
 
-    m_pController->activateActuatorModeInBantch(temp_vec , Actuator::ActuatorMode(msg.ActuatorMode));
+
+    if (m_mActuatorMode.find(msg.ActuatorMode) != m_mActuatorMode.end()){
+        m_pController->activateActuatorModeInBantch(temp_vec , m_mActuatorMode[msg.ActuatorMode]);
+    }else {
+        ROS_INFO("Wrong Actuator Modes Input!");
+    }
 
 }

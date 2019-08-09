@@ -93,6 +93,10 @@ include_directories(
          GeneralQuery.srv
          AttributeDictionary.srv
          DebugQuery.srv
+         TriviaQuery.srv
+         IDModify.srv
+         ParametersSave.srv
+         ZeroReset.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -141,7 +145,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES actuatorcontroller_ros
   CATKIN_DEPENDS message_generation roscpp std_msgs std_srvs
-#  DEPENDS system_lib
+  DEPENDS system_lib
 )
 
 ###########
@@ -243,5 +247,5 @@ target_link_libraries(${PROJECT_NAME}
 # catkin_add_nosetests(test)
 
 add_executable(innfos_actuator src/innfos_actuator.cpp)
-target_link_libraries(innfos_actuator ${catkin_LIBRARIES} ${PROJECT_NAME})
-add_dependencies(innfos_actuator ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(innfos_actuator  ${PROJECT_NAME})
+add_dependencies(innfos_actuator ${PROJECT_NAME} )

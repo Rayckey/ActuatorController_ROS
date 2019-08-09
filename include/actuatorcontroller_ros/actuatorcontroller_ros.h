@@ -33,6 +33,10 @@
 #include "actuatorcontroller_ros/GeneralQuery.h"
 #include "actuatorcontroller_ros/AttributeDictionary.h"
 #include "actuatorcontroller_ros/DebugQuery.h"
+#include "actuatorcontroller_ros/TriviaQuery.h"
+#include "actuatorcontroller_ros/IDModify.h"
+#include "actuatorcontroller_ros/ParametersSave.h"
+#include "actuatorcontroller_ros/ZeroReset.h"
 
 // std stuff
 #include <map>
@@ -93,7 +97,17 @@ private:
     bool serviceDebugQuery(actuatorcontroller_ros::DebugQueryRequest & req,
                                                    actuatorcontroller_ros::DebugQueryResponse & res );
 
+    bool serviceTriviaQuery(actuatorcontroller_ros::TriviaQueryRequest & req,
+                           actuatorcontroller_ros::TriviaQueryResponse & res );
 
+    bool serviceIDModify(actuatorcontroller_ros::IDModifyRequest & req,
+            actuatorcontroller_ros::IDModifyResponse & res);
+
+    bool serviceParameterSave(actuatorcontroller_ros::ParametersSaveRequest & req,
+                         actuatorcontroller_ros::ParametersSaveResponse & res);
+
+    bool serviceZeroReset(actuatorcontroller_ros::ZeroResetRequest & req,
+                          actuatorcontroller_ros::ZeroResetResponse & res);
 
 
     // private handles
@@ -133,6 +147,12 @@ private:
 	ros::ServiceServer m_serGeneralQuery;
 	ros::ServiceServer m_serAttributeLookup;
     ros::ServiceServer m_serAttributeDictionary;
+    ros::ServiceServer m_serTriviaQuery;
+    ros::ServiceServer m_serDebugQuery;
+    ros::ServiceServer m_serIDModify;
+    ros::ServiceServer m_serIDChange;
+    ros::ServiceServer m_serParametersSave;
+    ros::ServiceServer m_mZeroReset;
 
 
 	// temp message
@@ -144,7 +164,10 @@ private:
     std::map<std::string , ActuatorAttribute > m_mChangableDoubleAttribute;
     std::map<std::string , ActuatorAttribute > m_mChangableIntAttribute;
     std::map<std::string , std::string > m_mAttributeDictionary;
-    std::map<std::string , ActuatorMode > m_mActuatorMode;
+    std::map<std::string , std::string > m_mAttributeType;
+    std::map<std::string , bool > m_mAttributeChangeable;
+    std::map<int, ActuatorMode > m_mActuatorMode;
+    std::map<ActuatorMode, int > m_mActuatorModeReverse;
 
 
 }; //class
