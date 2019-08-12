@@ -30,25 +30,32 @@ int main(int argc, char **argv) {
   INNFOS_ptr = new ActuatorController_ROS();
 
 
-  ros::Timer timer1 = nh.createTimer(ros::Duration(0.005), actuator_event_callback);
+  ros::Timer timer1 = nh.createTimer(ros::Duration(0.001), actuator_event_callback);
+
+  ros::Timer timer2;
+
+  int control_rate;
+  // if a control rate is given, we will use it
+  if (ros::param::get("/innfos_actuator/innfos_fixed_rate", control_rate)){
+      double interval = 1.0/double(control_rate);
+      timer2 = nh.createTimer(ros::Duration(interval), &ActuatorController_ROS::updateInformation , INNFOS_ptr);
+  }
+  else {
+
+      while (ros::ok())
+      {
+          INNFOS_ptr->releaseJointStates();
+          INNFOS_ptr->updateROSParam();
+
+          ros::spinOnce();
+
+          ros::Duration(0.005).sleep();
+      }
 
 
-    while (ros::ok())
-    {
+  }
 
-
-        INNFOS_ptr->releaseJointStates();
-        INNFOS_ptr->updateROSParam();
-
-        ros::spinOnce();
-
-//        loop_rate.sleep();
-//        ++count;
-
-        ros::Duration(0.005).sleep();
-    }
-
-//  ros::spin();
+  ros::spin();
 
   return 0;
 }

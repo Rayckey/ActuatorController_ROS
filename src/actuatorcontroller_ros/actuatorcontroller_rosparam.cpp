@@ -3,13 +3,16 @@
 
 void ActuatorController_ROS::initializeROSParam(){
 
+    if (no_param){
 
-    std::vector<uint8_t> temp_vec = m_pController->getActuatorIdArray();
+    }else {
+        std::vector<uint8_t> temp_vec = m_pController->getActuatorIdArray();
 
-    for (uint8_t act_id : temp_vec){
+        for (uint8_t act_id : temp_vec){
 
-        initializeROSParam(act_id);
+            initializeROSParam(act_id);
 
+        }
     }
 
 }
@@ -17,48 +20,63 @@ void ActuatorController_ROS::initializeROSParam(){
 
 void ActuatorController_ROS::initializeROSParam(uint8_t joint_id){
 
-    if ((int) m_pController->getActuatorAttribute(joint_id, Actuator::INIT_STATE) == Actuator::Initialized) {
-        std::string temp_act_str = m_sINNFOS + m_sActuator + std::to_string(int(joint_id));
-
-        for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableDoubleAttribute.begin();
-             iter != m_mChangableDoubleAttribute.end(); iter++) {
-
-            ros::param::set(temp_act_str + "/" + iter->first,
-                            m_pController->getActuatorAttribute(joint_id, iter->second));
-
-        }
-
-        for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableIntAttribute.begin();
-             iter != m_mChangableIntAttribute.end(); iter++) {
-
-            ros::param::set(temp_act_str + "/" + iter->first,
-                            int(m_pController->getActuatorAttribute(joint_id, iter->second)));
-
-        }
-
+    if (no_param){
 
     }
+    else {
+        if ((int) m_pController->getActuatorAttribute(joint_id, Actuator::INIT_STATE) == Actuator::Initialized) {
+            std::string temp_act_str = m_sINNFOS + m_sActuator + std::to_string(int(joint_id));
+
+            for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableDoubleAttribute.begin();
+                 iter != m_mChangableDoubleAttribute.end(); iter++) {
+
+                ros::param::set(temp_act_str + "/" + iter->first,
+                                m_pController->getActuatorAttribute(joint_id, iter->second));
+
+            }
+
+            for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableIntAttribute.begin();
+                 iter != m_mChangableIntAttribute.end(); iter++) {
+
+                ros::param::set(temp_act_str + "/" + iter->first,
+                                int(m_pController->getActuatorAttribute(joint_id, iter->second)));
+
+            }
+
+
+        }
+    }
+
 }
 
 
 
 void ActuatorController_ROS::clearROSParam(){
-    std::vector<uint8_t> temp_vec = m_pController->getActuatorIdArray();
+    if (no_param){
 
-    for (uint8_t act_id : temp_vec){
+    }
+    else {
+        std::vector<uint8_t> temp_vec = m_pController->getActuatorIdArray();
 
-        clearROSParam(act_id);
+        for (uint8_t act_id : temp_vec){
 
+            clearROSParam(act_id);
+
+        }
     }
 
 }
 
 
 void ActuatorController_ROS::clearROSParam(uint8_t joint_id){
+    if (no_param){
 
-    std::string temp_act_str = m_sINNFOS + m_sActuator + std::to_string(int(joint_id));
+    }else {
+        std::string temp_act_str = m_sINNFOS + m_sActuator + std::to_string(int(joint_id));
 
-    ros::param::del(temp_act_str);
+        ros::param::del(temp_act_str);
+    }
+
 
 }
 
@@ -66,11 +84,17 @@ void ActuatorController_ROS::clearROSParam(uint8_t joint_id){
 
 void ActuatorController_ROS::updateROSParam(){
 
-    std::vector<uint8_t> temp_vec = m_pController->getActuatorIdArray();
+    if (no_param){
 
-    for (uint8_t act_id : temp_vec){
+    }
+    else{
+        std::vector<uint8_t> temp_vec = m_pController->getActuatorIdArray();
 
-        updateROSParam(act_id);
+        for (uint8_t act_id : temp_vec){
+
+            updateROSParam(act_id);
+
+        }
 
     }
 
@@ -79,39 +103,43 @@ void ActuatorController_ROS::updateROSParam(){
 
 void ActuatorController_ROS::updateROSParam(uint8_t joint_id){
 
+    if (no_param){
 
-    if ((int) m_pController->getActuatorAttribute(joint_id, Actuator::INIT_STATE) == Actuator::Initialized) {
-        std::string temp_act_str = m_sINNFOS + m_sActuator + std::to_string(int(joint_id));
+    }
+    else {
 
-        double temp_double;
+        if ((int) m_pController->getActuatorAttribute(joint_id, Actuator::INIT_STATE) == Actuator::Initialized) {
+            std::string temp_act_str = m_sINNFOS + m_sActuator + std::to_string(int(joint_id));
 
-        // iterate through the map of changeable attributes with double values
-        for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableDoubleAttribute.begin();
-             iter != m_mChangableDoubleAttribute.end(); iter++) {
+            double temp_double;
+
+            // iterate through the map of changeable attributes with double values
+            for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableDoubleAttribute.begin();
+                 iter != m_mChangableDoubleAttribute.end(); iter++) {
 
 
-            if (ros::param::get(temp_act_str + "/" + iter->first,temp_double)){
+                if (ros::param::get(temp_act_str + "/" + iter->first,temp_double)){
 
-                if (temp_double == m_pController->getActuatorAttribute(joint_id , iter->second)){
-                    continue;
-                }else {
-                    std::string message = "Change Parameter " + iter->first + " for actuator " + std::to_string(int(joint_id)) + " to " + std::to_string(temp_double);
-                    ROS_INFO("%s\n", message.c_str());
-                    if (m_pController->setActuatorAttributeWithACK(m_pController->toLongId(joint_id) , iter->second , temp_double)){
+                    if (temp_double == m_pController->getActuatorAttribute(joint_id , iter->second)){
+                        continue;
+                    }else {
+                        std::string message = "Change Parameter " + iter->first + " for actuator " + std::to_string(int(joint_id)) + " to " + std::to_string(temp_double);
+                        ROS_INFO("%s\n", message.c_str());
+                        if (m_pController->setActuatorAttributeWithACK(m_pController->toLongId(joint_id) , iter->second , temp_double)){
 
-                    }else{
-                        ROS_INFO("Parameters setting failed! reverting...");
-                        ros::param::set(temp_act_str + "/" + iter->first,m_pController->getActuatorAttribute(joint_id , iter->second ));
+                        }else{
+                            ROS_INFO("Parameters setting failed! reverting...");
+                            ros::param::set(temp_act_str + "/" + iter->first,m_pController->getActuatorAttribute(joint_id , iter->second ));
+                        }
+
                     }
 
                 }
-
             }
-        }
 
 
 
-        int temp_int;
+            int temp_int;
 
 //        // iterate through the map of changeable attributes with integer values
 //        for (std::map<std::string, ActuatorAttribute>::iterator iter = m_mChangableIntAttribute.begin();
@@ -139,10 +167,12 @@ void ActuatorController_ROS::updateROSParam(uint8_t joint_id){
 //        }
 
 
-        //
+            //
 
 
+        }
     }
+
 
 }
 

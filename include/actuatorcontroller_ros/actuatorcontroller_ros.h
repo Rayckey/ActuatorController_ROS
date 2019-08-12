@@ -8,7 +8,6 @@
 #include "actuatorcontroller.h"
 #include "actuatordefine.h"
 
-
 // standard message type
 #include <std_msgs/Bool.h>
 #include <sensor_msgs/JointState.h>
@@ -18,8 +17,6 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Int32MultiArray.h>
-
-
 
 // custom message type
 #include "actuatorcontroller_ros/ActuatorAttribute.h"
@@ -59,12 +56,14 @@ public:
 
     void updateROSParam(uint8_t joint_id);
 
-
+    // timer callback
+    void updateInformation(const ros::TimerEvent &  time_eve);
 
 
 
 
 private:
+
 
 
 
@@ -83,6 +82,8 @@ private:
 
     void subscribeSetControlMode(const actuatorcontroller_ros::ActuatorModes & msg);
 
+
+    // service callback
     bool serviceAttributeQuery(actuatorcontroller_ros::AttributeQueryRequest & req,
                                actuatorcontroller_ros::AttributeQueryResponse & res );
 
@@ -168,6 +169,11 @@ private:
     std::map<std::string , bool > m_mAttributeChangeable;
     std::map<int, ActuatorMode > m_mActuatorMode;
     std::map<ActuatorMode, int > m_mActuatorModeReverse;
+
+
+    // internal variables
+    bool use_cvp;
+    bool no_param;
 
 
 }; //class

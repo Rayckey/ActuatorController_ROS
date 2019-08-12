@@ -12,8 +12,8 @@ ActuatorController_ROS::ActuatorController_ROS(){
 
     m_pubJointState = nh.advertise<sensor_msgs::JointState>("/INNFOS/actuator_states", 10);
 
-    m_subAttributeChange = nh.subscribe("/INNFOS/changeAttribute", 100,
-                                              &ActuatorController_ROS::subscribeChangeAttribute, this);
+//    m_subAttributeChange = nh.subscribe("/INNFOS/changeAttribute", 100,
+//                                              &ActuatorController_ROS::subscribeChangeAttribute, this);
 
 
     m_subEnableActuator = nh.subscribe("/INNFOS/enableActuator", 100,
@@ -64,6 +64,19 @@ ActuatorController_ROS::ActuatorController_ROS(){
     m_mActuatorModeReverse[ActuatorMode::Mode_Profile_Vel] = 5;
     m_mActuatorModeReverse[ActuatorMode::Mode_Homing] = 6;
 
+
+
+    use_cvp = false ;
+    no_param = false;
+
+    bool temp_bool;
+    if (ros::param::get("/innfos_actuator/innfos_use_cvp", temp_bool)){
+        use_cvp = temp_bool;
+    }
+    if (ros::param::get("/innfos_actuator/innfos_no_param" , temp_bool)){
+        no_param = temp_bool;
+    }
+
     initializeROSParam();
 
 
@@ -80,6 +93,10 @@ ActuatorController_ROS::~ActuatorController_ROS() {
 
 }
 
+void ActuatorController_ROS::updateInformation(const ros::TimerEvent &  time_eve){
+    releaseJointStates();
+    updateROSParam();
+}
 
 
 
@@ -99,9 +116,17 @@ void ActuatorController_ROS::releaseJointStates(){
         if ((int) m_pController->getActuatorAttribute(joint_id, Actuator::INIT_STATE) == Actuator::Initialized) {
 
             temp_jointstate.name.push_back("Actuator" + std::to_string(int(joint_id)));
-            temp_jointstate.position.push_back(m_pController->getPosition( joint_id,true));
-            temp_jointstate.velocity.push_back(m_pController->getVelocity( joint_id,true));
-            temp_jointstate.effort.push_back(m_pController->getCurrent( joint_id,true));
+
+            if (use_cvp){
+                m_pController->requestCVPValue(joint_id);
+                temp_jointstate.position.push_back(m_pController->getPosition( joint_id,false));
+                temp_jointstate.velocity.push_back(m_pController->getVelocity( joint_id,false));
+                temp_jointstate.effort.push_back(m_pController->getCurrent( joint_id,false));
+            }else {
+                temp_jointstate.position.push_back(m_pController->getPosition( joint_id,true));
+                temp_jointstate.velocity.push_back(m_pController->getVelocity( joint_id,true));
+                temp_jointstate.effort.push_back(m_pController->getCurrent( joint_id,true));
+            }
 
         }
     }
