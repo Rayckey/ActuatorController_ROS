@@ -34,13 +34,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 
 
-include_directories(
-        include
-        include/${PROJECT_NAME}
-        ${CMAKE_CURRENT_SOURCE_DIR}/ActuatorController_SDK/include
-        ${catkin_INCLUDE_DIRS}
 
-)
 
 
 ## Generate messages in the 'msg' folder
@@ -79,7 +73,13 @@ include_directories(
    std_msgs
  )
 
+include_directories(
+        include
+        include/${PROJECT_NAME}
+        ${CMAKE_CURRENT_SOURCE_DIR}/ActuatorController_SDK/include
+        ${catkin_INCLUDE_DIRS}
 
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -101,6 +101,12 @@ catkin_package(
 ## Build ##
 ###########
 
+
+
+
+
+
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
@@ -114,6 +120,10 @@ include_directories(
          src/${PROJECT_NAME}/actuatorcontroller_rosparam.cpp
          src/${PROJECT_NAME}/actuatorcontroller_rosservice.cpp
  )
+
+## Add cmake target dependencies of the executable/library
+## as an example, message headers may need to be generated before nodes
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
