@@ -29,16 +29,66 @@ $ source devel/setup.bash
 Now you're ready to use the package!
 
 
-# How to Use
-## ROS node
-To run the ros node seperately and start actuators with the default options
+
+
+# Usage Example
+For a first time user, it is recommanded to read through the INNFOS wiki page for the setup: https://innfos.github.io/wiki/en/#!index.md <br>
+You can start the ROS node as soon as the device is connected to the commnunication bridge. <br>
+The most generic may to start the ROS node is to use rosrun:
+```
+$ roscore
+$ rosrun actuatorcontroller_ros innfos_actuator
+```
+To ensure all the actuators are connected, you should first check the lists of avaliable actuators via the /INNFOS/GeneralQuery service:
+```
+rosservice call /INNFOS/GeneralQuery "isQuery: true" 
+```
+And then, you can enable the actuators of your choice. Here we try to enable all the actuators in one go by using the ID 0:
+```
+rostopic pub -1 /INNFOS/enableActuator actuatorcontroller_ros/ActuatorArray "JointIDs:
+- 0" 
+
+``` 
+It should be noted that there should not be any actuators with the ID 0. <br>
+By default, the actuators when first launched will be in current mode, you can varify it using the service:
+```
+rosservice call /INNFOS/AttributeQuery "ActuatorID: 1"
+``` 
+The "MODE_ID" variable is the active mode of the actuator. <br>
+If you come across a term that you need more clarifications of, you can call the service:
+```
+rosservice call /INNFOS/Dictionary "LookupTerm:
+  data: 'MODE_ID'" 
+```
+You will get a detailed explanation for this parameter.<br>
+
+To enforce position control to the robot, you should first change its mode:
+```
+rostopic pub -1 /INNFOS/setControlMode actuatorcontroller_ros/ActuatorModes "JointIDs:
+- 3
+ActuatorMode: 4" 
+``` 
+Here we changed the third actuator to Mode_Profile_Pos, which allows us to control the actuator's position with local planner. <br>
+```
+rostopic pub -1 /INNFOS/setTargetPosition actuatorcontroller_ros/ActuatorCommand "JointID: 0
+TargetValue: 0.0"
+```
+And the target position commands can finally take effect.
+
+
+
+
+# Launching the Node
+There are a couple of ways to launch the nodes. The node will always have the basic functions, but the users may affect its performance by changing its parameters.
+## rosrun with default options
+To run the ros node seperately and start actuators with the default options, as seen in the example
 ```
 $ roscore
 $ rosrun actuatorcontroller_ros innfos_actuator
 ```
 
-## ROS launch
-You can launch the node with custom parameters if you wish to change the performance of the controller. These launch files are mere examples and their effects can be combined.
+## roslaunch with modified options
+You can launch the node with custom parameters if you wish to change the performance of the controller. These launch files are mere examples and their effects can be combined.<br>
 ```
 $ roslaunch actuatorcontroller_ros innfos_no_param.launch
 ```
@@ -52,8 +102,9 @@ When this parameter is present, the node will attempt to process the messages at
 $ roslaunch actuatorcontroller_ros innfos_use_cvp.launch
 ```
 This launch file adds the parameter "innfos_use_cvp" in parameter server.
-When this parameter is true, the controller will use a more efficient method when requesting the current states of the actuators. BUT the values will have a slight delay depending on the control rate. This is best used with the "innfos_fixed_rate" parameter.
+When this parameter is true, the controller will use a more efficient method when requesting the current states of the actuators. BUT the values will have a slight delay depending on the control rate. This is best used with the "innfos_fixed_rate" parameter. <br>
 
+Beware! These settings will not take effects if the node is already running! (i.e. If you started the node and then added the paramters it will not take effects! These paramters must be present at the start of the node for it to work. Alternatively, you can create your own launch files that combine these paramters.)
 
 # ROS Messages, Services & Parameters
 ## Parameters of an INNFOS actuator
@@ -145,52 +196,10 @@ Since each actuator has a number of modifiable parameters, the parameter names o
 /INNFOS/Actuator/${ACTUATOR_ID}/${PARAMETER_NAME}
 ```
 You can look up the parameter using the service /INNFOS/Dictionary. <br>
-ote that any changes will need to be saved using the /INNFOS/ParametersSave for it to take effects in the next boot-up. <br>
+Note that any changes will need to be saved using the /INNFOS/ParametersSave service for it to take effects in the next boot-up. <br>
 If the assignment was unsuccessful, the parameter will be reverted on the server.
 
 
-# Usage Example
-For a first time user, it is recommanded to read through the INNFOS wiki page for the setup: https://innfos.github.io/wiki/en/#!index.md <br>
-You can start the ROS node as soon as the device is connected to the commnunication bridge. <br>
-To ensure all the actuators are connected, you should first check the lists of avaliable actuators via the /INNFOS/GeneralQuery service:
-```
-rosservice call /INNFOS/GeneralQuery "isQuery: true" 
-```
-And then, you can enable the actuators of your choice. Here we try to enable all the actuators in one go by using the ID 0:
-```
-rostopic pub -1 /INNFOS/enableActuator actuatorcontroller_ros/ActuatorArray "JointIDs:
-- 0" 
-
-``` 
-It should be noted that there should not be any actuators with the ID 0. <br>
-By default, the actuators when first launched will be in current mode, you can varify it using the service:
-```
-rosservice call /INNFOS/AttributeQuery "ActuatorID: 1"
-``` 
-The "MODE_ID" variable is the active mode of the actuator. <br>
-If you come across a term that you need more clarifications of, you can call the service:
-```
-rosservice call /INNFOS/Dictionary "LookupTerm:
-  data: 'MODE_ID'" 
-```
-You will get a detailed explanation for this parameter.<br>
-
-To enforce position control to the robot, you should first change its mode:
-```
-rostopic pub -1 /INNFOS/setControlMode actuatorcontroller_ros/ActuatorModes "JointIDs:
-- 3
-ActuatorMode: 4" 
-``` 
-Here we changed the third actuator to Mode_Profile_Pos, which allows us to control the actuator's position with local planner. <br>
-```
-rostopic pub -1 /INNFOS/setTargetPosition actuatorcontroller_ros/ActuatorCommand "JointID: 0
-TargetValue: 0.0"
-```
-And the target position commands can finally take effect.
-
 # Change logs
-Added a usage example: 2019/08/21
-
-
 
 <table style="width:500px"><thead><tr style="background:PaleTurquoise"><th style="width:100px">Version number</th><th style="width:150px">Update time</th><th style="width:3800px">Update content</th></tr></thead><tbody><tr><td>v1.0.2</td><td>2019.08.21</td><td> Included an example in readme </th></tr></thead><tbody><tr><td>v1.0.1</td><td>2019.08.09</td><td>Added readme</th></tr></thead><tbody><tr><td>v1.0.0</td><td>2019.08.09</td><td>Node tested with actuators on Ubuntu 16.04 with ROS Luna, Stable release</td></tbody></table>
