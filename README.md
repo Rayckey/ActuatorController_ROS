@@ -96,10 +96,9 @@ Set the target current for the designated actuator, will only have effects when 
 
 
 ### Services
-##### /INNFOS/GeneralQuery service.
- (ActuatorController_ROS::GeneralQuery)
+##### /INNFOS/GeneralQuery (ActuatorController_ROS::GeneralQuery)
 Function: Allows users to lookup all avaliable actuators and their status.
-Input: A placeholder variable not needed <br>
+Input: A placeholder variable, not needed <br>
 Output: Provide a list of all avaliable actuators and their status.<br>
 
 ##### /INNFOS/AttributeQuery (ActuatorController_ROS::AttributeQuery)
@@ -151,7 +150,7 @@ If the assignment was unsuccessful, the parameter will be reverted on the server
 
 
 # Usage Example
-For a first time user, it is recommanded to read through the INNFOS wiki page for the setup: https://innfos.github.io/wiki/en <br>
+For a first time user, it is recommanded to read through the INNFOS wiki page for the setup: https://innfos.github.io/wiki/en/#!index.md <br>
 You can start the ROS node as soon as the device is connected to the commnunication bridge. <br>
 To ensure all the actuators are connected, you should first check the lists of avaliable actuators via the /INNFOS/GeneralQuery service:
 ```
@@ -191,3 +190,7 @@ And the target position commands can finally take effect.
 
 # Change logs
 Added a usage example: 2019/08/21
+
+
+
+<table style="width:500px"><thead><tr style="background:PaleTurquoise"><th style="width:100px">Version number</th><th style="width:150px">Update time</th><th style="width:3800px">Update content</th></tr></thead><tbody><tr><td>v1.0.2</td><td>2019.08.21</td><td> Included an example in readme </th></tr></thead><tbody><tr><td>v1.0.1</td><td>2019.08.09</td><td>Added readme</th></tr></thead><tbody><tr><td>v1.0.0</td><td>2019.08.09</td><td>Node tested with actuators on Ubuntu 16.04 with ROS Luna, Stable release</td></tbody></table>
