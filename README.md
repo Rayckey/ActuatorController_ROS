@@ -65,7 +65,7 @@ By default, the actuators when first launched will be in current mode, you can v
 $ rosservice call /INNFOS/AttributeQuery "ActuatorID: 2"
 ``` 
 You will get a response similar to:
-```$xslt
+```
 ACTUAL_CURRENT: 0.00266915559769
 ACTUAL_VELOCITY: -6.74343109131
 ACTUAL_POSITION: -0.251586914062
@@ -82,7 +82,7 @@ $ rosservice call /INNFOS/Dictionary "LookupTerm:
   data: 'MODE_ID'" 
 ```
 You will get a detailed explanation for this parameter, like this:
-````$xslt
+````
 TermType: 
   data: "Integer"
 isChangeable: True
@@ -106,58 +106,58 @@ TargetValue: 0.0"
 You should be able to see the actuator moving now. <br>
 Maybe you just got spooked because the actuator was moving way too fast for its own good. Well good news, next we will limit the it's maximum velocity using `rosparam` <br>
 First, we can check the acceleration used in `Mode_Profile_pos`:
-```$xslt
+```
 $ rosparam get /INNFOS/Actuator/2/PROFILE_POS_ACC
 ``` 
 And we got the results:
-```$xslt
+```
 2000.0
 ```
 Yikes, that is one quick actuator, you may have a different value, nonetheless let's change it to a more reasonable value:
-```$xslt
+```
 $ rosparam set /INNFOS/Actuator/2/PROFILE_POS_ACC 800.0
 ```
 If it worked, the actuator node should have this output:
-```$xslt
+```
 [ INFO] [1566789998.845573133]: Change Parameter PROFILE_POS_ACC for actuator 2 to 800.000000
 ```
 We also need to change a couple parameters:
-```$xslt
+```
 $ rosparam set /INNFOS/Actuator/2/PROFILE_POS_DEC -800.0
 $ rosparam set /INNFOS/Actuator/2/PROFILE_POS_MAX_SPEED 1200
 ```
 And now you can set another target position can see how fast it moves!
-```$xslt
+```
 $ rostopic pub -1 /INNFOS/setTargetPosition actuatorcontroller_ros/ActuatorCommand "JointID: 2
 TargetValue: 10.0"
 ```
 Now the actuator is running smoothly, but the actuator is in position "10" now, and it is not the "10" that we wanted. <br>
 Say you want to adjust the `zero position` of the actuator, so you can change the actuator mode to `Mode_Homing`:
-```$xslt
+```
 $ rostopic pub -1 /INNFOS/setControlMode actuatorcontroller_ros/ActuatorModes "JointIDs:
 - 2
 ActuatorMode: 6"
 ```
 This will let the actuator enter `Mode_Cur` with an internal flag. If you check the `MODE_ID` now it may return as 1, 'fraid not ,'just go ahead and put the actuator in your desired zero position by hand. <br>
 When you are finished, keep the actuator steady at that position (or just leave it alone ) and use the service:
-```$xslt
+```
 $ rosservice call /INNFOS/ZeroReset "JointID: 2"
 ```
 It the operation is successful, it will return this:
-```$xslt
+```
 isSuccessful: True
 ```
 Don't forget to change the position upper and lower limits now since they changed with the zero position:
-```$xslt
+```
 $ rosparam set /INNFOS/Actuator/2/POS_LIMITATION_MAXIMUM 127
 $ rosparam set /INNFOS/Actuator/2/POS_LIMITATION_MINIMUM -127
 ```
 Don't forget that if you have changed the parameters, you will have to download them to the actuators for them to take effects next time they are booted up:
-```$xslt
+```
 $ rosservice call /INNFOS/ParametersSave "ActuatorID: 2"
 ``` 
 Similar to the `/INNFOS/ZeroReset` service, it will return a boolean.
-```$xslt
+```
 isSuccessful: True
 ```
 And that's the basics, you can check all the options in the following sections.
@@ -166,7 +166,7 @@ And that's the basics, you can check all the options in the following sections.
 # Launching the Node
 There are a couple of ways to launch the nodes. The node will always have the basic functions, but the users may affect its performance by changing its parameters.
 ## rosrun with default options
-To run the ros node seperately and start actuators with the default options, as seen in the example
+To run the ros node separately and start actuators with the default options, as seen in the example
 ```
 $ roscore
 $ rosrun actuatorcontroller_ros innfos_actuator
@@ -189,7 +189,7 @@ $ roslaunch actuatorcontroller_ros innfos_use_cvp.launch
 This launch file adds the parameter `innfos_use_cvp` in parameter server.
 When this parameter is true, the controller will use a more efficient method when requesting the current states of the actuators. BUT the values will have a slight delay depending on the control rate. This is best used with the "innfos_fixed_rate" parameter. <br>
 
-Beware! These settings will not take effects if the node is already running! (i.e. If you started the node and then added the paramters it will not take effects! These paramters must be present at the start of the node for it to work. Alternatively, you can create your own launch files that combine these parameters.)
+Beware! These settings will not take effects if the node is already running! (i.e. If you started the node and then added the parameters it will not take effects! These paramters must be present at the start of the node for it to work. Alternatively, you can create your own launch files that combine these parameters.)
 
 # ROS Messages, Services & Parameters
 ## Parameters of an INNFOS actuator
@@ -198,7 +198,7 @@ The paramters of each actuator are seperated into four groups: <br>
 2.Frequently used unmodifiable parameters<br>
 3.Infrequently used modifiable parameters<br>
 4.Infrequently used unmodifiable parameters<br>
-The most accessed parameters can be inquired or modified using ROS messages and services, the less used parameters are only accesable through the ROS Parameter server. The unmodifiable information can only be viewed using ROS services
+The most accessed parameters can be inquired or modified using ROS messages and services, the less used parameters are only accessible through the ROS Parameter server. The unmodifiable information can only be viewed using ROS services
 You can easily see the messages/services typies using:
 ```
 $ rostopic type ${TOPIC_NAME}
@@ -207,101 +207,84 @@ $ rosservice type ${SERVICE_NAME}
 
 ### Published Topics
 
-##### /INNFOS/actuator_states (`sensor_msgs::JointState`)
-
+#### /INNFOS/actuator_states (`sensor_msgs::JointState`)
 Provide all avaliable actuators' positions, velocities and efforts when the actuators are enabled. Their units are `Rotations`, `RPM`, and `Amp` respectively. <br>
 
 ### Subscribed Topics
+#### /INNFOS/enableActuator (`ActuatorController_ROS::ActuatorArray`)
+Enable the designated actuators, if the input is empty or 0, the node will enable all available actuators. <br>
 
-##### /INNFOS/enableActuator (`ActuatorController_ROS::ActuatorArray`)
+#### /INNFOS/disableActuator (`ActuatorController_ROS::ActuatorArray`)
+Disable the designated actuators, if the input is empty or 0, the node  will disable all available actuators. <br>
 
-Enable the designated actuators, if the input is empty or 0, the node will enable all avaliable actuators. <br>
+#### /INNFOS/setControlMode (` ActuatorController_ROS::ActuatorModes`)
+Set the control mode for the designated actuators, you can check the available modes by using the service /INNFOS/Dictionary. <br>
 
-##### /INNFOS/disableActuator (`ActuatorController_ROS::ActuatorArray`)
-
-Disable the designated actuators, if the input is empty or 0, the node  will disable all avaliable actuators. <br>
-
-##### /INNFOS/setControlMode (` ActuatorController_ROS::ActuatorModes`)
-
-Set the control mode for the designated actuators, you can check the avaliable modes by using the service /INNFOS/Dictionary. <br>
-
-##### /INNFOS/setTargetPosition (`ActuatorController_ROS::ActuatorCommand`)
-
+#### /INNFOS/setTargetPosition (`ActuatorController_ROS::ActuatorCommand`)
 Set the target position for the designated actuator, will only have effects when the actuator is in the correct mode. <br>
 
 
-##### /INNFOS/setTargetVelocity (`ActuatorController_ROS::ActuatorCommand`)
-
+#### /INNFOS/setTargetVelocity (`ActuatorController_ROS::ActuatorCommand`)
 Set the target velocity for the designated actuator, will only have effects when the actuator is in the correct mode. <br>
 
 
-##### /INNFOS/setTargetCurrent (`ActuatorController_ROS::ActuatorCommand`)
-
+#### /INNFOS/setTargetCurrent (`ActuatorController_ROS::ActuatorCommand`)
 Set the target current for the designated actuator, will only have effects when the actuator is in the correct mode. <br>
 
 
 ### Services
-
-##### /INNFOS/GeneralQuery (`ActuatorController_ROS::GeneralQuery`)
-
-Function: Allows users to lookup all avaliable actuators and their status.
+#### /INNFOS/GeneralQuery (`ActuatorController_ROS::GeneralQuery`)
+Function: Allows users to lookup all avaliable actuators and their status. <br>
 Input: A placeholder variable, not needed <br>
 Output: Provide a list of all avaliable actuators and their status.<br>
 
-##### /INNFOS/AttributeQuery (`ActuatorController_ROS::AttributeQuery`)
-
-Function: Allow users to lookup some frequently used modifiable parameters of the actuators. To modify these parameters, please use the designaed servies/messages <br>
+#### /INNFOS/AttributeQuery (`ActuatorController_ROS::AttributeQuery`)
+Function: Allow users to lookup some frequently used modifiable parameters of the actuators. To modify these parameters, please use the designated services/messages <br>
 Input: The designated actuator ID. <br>
 Output: Return a list of the frequently used parameters for the designated actuator.<br>
 
-##### /INNFOS/TriviaQuery (`ActuatorController_ROS::TriviaQuery`)
-
+#### /INNFOS/TriviaQuery (`ActuatorController_ROS::TriviaQuery`)
 Function: Allow users to lookup some frequently used unmodifiable parameters of the actuators. <br>
 Input: The designated actuator ID. <br>
 Output: Return a list of the frequently used unmodifiable parameters for the designated actuator.<br>
 
-##### /INNFOS/DebugQuery (`ActuatorController_ROS::DebugQuery`) 
-
-Function: Allow users to lookup some infrequently used unmodifiable parameters of the actuators. Th
+#### /INNFOS/DebugQuery (`ActuatorController_ROS::DebugQuery`) 
+Function: Allow users to lookup some infrequently used unmodifiable parameters of the actuators. <br>
 Input: The designated actuator ID. <br>
 Output: Return a list of the infrequently used unmodifiable parameters for the designated actuator. Only for debugging. <br>
 
-##### /INNFOS/Dictionary (`ActuatorController_ROS::AttributeDictionary`)
-
-Function: Allows user to look up Attribute terms' meanings and usages.
+#### /INNFOS/Dictionary (`ActuatorController_ROS::AttributeDictionary`)
+Function: Allows user to look up Attribute terms' meanings and usages. <br>
 Input: The attribute term (i.e. "MODE_ID") in string <br>
-Output: The explaination and usage of the term or parameter. <br>
+Output: The explanation and usage of the term or parameter. <br>
 
-##### /INNFOS/IDChange (`ActuatorController_ROS::IDModify`)
-
-Function: Permentaly download the user's setting into the actuator, allows it to take effect the next time it is powered up. <br>
+#### /INNFOS/IDChange (`ActuatorController_ROS::IDModify`)
+Function: Permanently download the user's setting into the actuator, allows it to take effect the next time it is powered up. <br>
 Input: The original ID, and the modified ID. <br>
 Output: Will return a boolean to indicate whether this operation is successful. <br>
 
-##### /INNFOS/ParametersSave (`ActuatorController_ROS::ParametersSave`)
-
-Function: Permentaly download the user's setting into the actuator, allows it to take effect the next time it is powered up. <br>
+#### /INNFOS/ParametersSave (`ActuatorController_ROS::ParametersSave`)
+Function: Permanently download the user's setting into the actuator, allows it to take effect the next time it is powered up. <br>
 Input: The designated actuator ID. <br>
 Output: Will return a boolean to indicate whether this operation is successful. <br>
 
 
-##### /INNFOS/ZeroReset (`ActuatorController_ROS::ZeroReset`)
-
-Function: Reset the actuator's abosulte zero position to its current position, the actuator has to be in homeing mode for it to take effects. (Due to some issues, the actuator may appear to be in current mode even after setting it to homing mode, but it will still have taken effects.) <br>
+#### /INNFOS/ZeroReset (`ActuatorController_ROS::ZeroReset`)
+Function: Reset the actuator's absolute zero position to its current position, the actuator has to be in homing mode for it to take effects. (Due to some issues, the actuator may appear to be in current mode even after setting it to homing mode, but it will still have taken effects.) <br>
 Input: The designated actuator ID. <br>
-Output: Allows the user to reset the zero position of the actuator. Note that any changes will need to be saved using the /INNFOS/ParametersSave for it to take effects in the next boot-up. <br>
+Output: Allows the user to reset the zero position of the actuator. Note that any changes will need to be saved using the `/INNFOS/ParametersSave` for it to take effects in the next boot-up. <br>
 
 
 ### Parameters Server
 
 This allows the user to modify the infrequently used modifiable parameters.<br>
-Since each actuator has a number of modifiable parameters, the parameter names on the server are arraged in the format of : <br>
+Since each actuator has a number of modifiable parameters, the parameter names on the server are arranged in the format of : <br>
 ```
 /INNFOS/Actuator/${ACTUATOR_ID}/${PARAMETER_NAME}
 ```
 You can look up the explanation of the parameter using the service /INNFOS/Dictionary. <br>
 Note that any changes will need to be saved using the /INNFOS/ParametersSave service for it to take effects in the next boot-up. <br>
-If the assignment was unsuccessful, the parameter will be reverted on the server.
+If the assignment was unsuccessful, the parameter will be reverted on the server. <br>
 
 
 # Change logs
