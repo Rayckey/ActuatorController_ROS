@@ -8,7 +8,7 @@ A ROS wrapper for INNFOS Actuator Controller
 
 # How to Install
 ## ROS
-If you have not already, follow the instrutions on http://wiki.ros.org/ to install ROS version of your choice.
+If you have not already, follow the instructions on http://wiki.ros.org/ to install ROS version of your choice.
 
 ## Install
 This package is tested on an X86 system with Ubuntu 16.04 installed.
@@ -48,7 +48,7 @@ To ensure all the actuators are connected, you should first check the lists of a
 $ rosservice call /INNFOS/GeneralQuery "isQuery: true" 
 ```
 You should get a response such as:
-```$xslt
+```
 ActuatorList: [2, 5]
 ActuatorSwitch: [0, 0]
 ```
@@ -189,11 +189,11 @@ $ roslaunch actuatorcontroller_ros innfos_use_cvp.launch
 This launch file adds the parameter `innfos_use_cvp` in parameter server.
 When this parameter is true, the controller will use a more efficient method when requesting the current states of the actuators. BUT the values will have a slight delay depending on the control rate. This is best used with the "innfos_fixed_rate" parameter. <br>
 
-Beware! These settings will not take effects if the node is already running! (i.e. If you started the node and then added the parameters it will not take effects! These paramters must be present at the start of the node for it to work. Alternatively, you can create your own launch files that combine these parameters.)
+Beware! These settings will not take effects if the node is already running! (i.e. If you started the node and then added the parameters it will not take effects! These parameters must be present at the start of the node for it to work. Alternatively, you can create your own launch files that combine these parameters.)
 
 # ROS Messages, Services & Parameters
 ## Parameters of an INNFOS actuator
-The paramters of each actuator are seperated into four groups: <br>
+The parameters of each actuator are separated into four groups: <br>
 1.Frequently used modifiable parameters<br>
 2.Frequently used unmodifiable parameters<br>
 3.Infrequently used modifiable parameters<br>
@@ -208,7 +208,7 @@ $ rosservice type ${SERVICE_NAME}
 ### Published Topics
 
 #### /INNFOS/actuator_states (`sensor_msgs::JointState`)
-Provide all avaliable actuators' positions, velocities and efforts when the actuators are enabled. Their units are `Rotations`, `RPM`, and `Amp` respectively. <br>
+Provide all available actuators' positions, velocities and efforts when the actuators are enabled. Their units are `Rotations`, `RPM`, and `Amp` respectively. <br>
 
 ### Subscribed Topics
 #### /INNFOS/enableActuator (`ActuatorController_ROS::ActuatorArray`)
@@ -234,9 +234,9 @@ Set the target current for the designated actuator, will only have effects when 
 
 ### Services
 #### /INNFOS/GeneralQuery (`ActuatorController_ROS::GeneralQuery`)
-Function: Allows users to lookup all avaliable actuators and their status. <br>
+Function: Allows users to lookup all available actuators and their status. <br>
 Input: A placeholder variable, not needed <br>
-Output: Provide a list of all avaliable actuators and their status.<br>
+Output: Provide a list of all available actuators and their status.<br>
 
 #### /INNFOS/AttributeQuery (`ActuatorController_ROS::AttributeQuery`)
 Function: Allow users to lookup some frequently used modifiable parameters of the actuators. To modify these parameters, please use the designated services/messages <br>
@@ -276,7 +276,6 @@ Output: Allows the user to reset the zero position of the actuator. Note that an
 
 
 ### Parameters Server
-
 This allows the user to modify the infrequently used modifiable parameters.<br>
 Since each actuator has a number of modifiable parameters, the parameter names on the server are arranged in the format of : <br>
 ```
