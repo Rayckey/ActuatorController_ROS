@@ -29,7 +29,7 @@ Remember that whenever you need to use the node/messages/services in a new termi
 ```
 $ source devel/setup.bash
 ```
-Alternatively, you can source in your `.bachrc` file, which will force the terminal to source every time it boots up. <br>
+Alternatively, you can source in your `.bashrc` file, which will force the terminal to source every time it boots up. <br>
 Now you're ready to use the package!
 
 
@@ -47,7 +47,7 @@ The most common way to start the ROS node is to use `rosrun`, open a new termina
 ```
 $ rosrun actuatorcontroller_ros innfos_actuator
 ```
-To ensure all the actuators are connected, you should first check the lists of available actuators via the /INNFOS/GeneralQuery service:
+To ensure all the actuators are connected, you should first check the lists of available actuators via the `/INNFOS/GeneralQuery` service:
 ```
 $ rosservice call /INNFOS/GeneralQuery "isQuery: true" 
 ```
@@ -143,7 +143,7 @@ $ rostopic pub -1 /INNFOS/setControlMode actuatorcontroller_ros/ActuatorModes "J
 ActuatorMode: 6"
 ```
 This will let the actuator enter `Mode_Cur` with an internal flag. If you check the `MODE_ID` now it may return as 1, 'fraid not ,just go ahead and put the actuator in your desired zero position by hand. <br>
-When you are finished, keep the actuator steady at that position (or just leave it alone ) and use the service:
+When you are finished, keep the actuator steady at that position (or just leave it alone) and use the service:
 ```
 $ rosservice call /INNFOS/ZeroReset "JointID: 2"
 ```
@@ -263,7 +263,7 @@ Input: The attribute term (i.e. `MODE_ID`) in string <br>
 Output: The explanation and usage of the term or parameter. <br>
 
 #### /INNFOS/IDChange (`ActuatorController_ROS::IDModify`)
-Function: Permanently download the user's setting into the actuator, allows it to take effect the next time it is powered up. <br>
+Function: Change the ID of an actuator <br>
 Input: The original ID, and the modified ID. <br>
 Output: Will return a boolean to indicate whether this operation is successful. <br>
 
@@ -276,11 +276,11 @@ Output: Will return a boolean to indicate whether this operation is successful. 
 #### /INNFOS/ZeroReset (`ActuatorController_ROS::ZeroReset`)
 Function: Reset the actuator's absolute zero position to its current position, the actuator has to be in homing mode for it to take effects. (Due to some issues, the actuator may appear to be in current mode even after setting it to homing mode, but it will still have taken effects.) <br>
 Input: The designated actuator ID. <br>
-Output: Allows the user to reset the zero position of the actuator. Note that any changes will need to be saved using the `/INNFOS/ParametersSave` for it to take effects in the next boot-up. <br>
+Output: Will return a boolean to indicate whether this operation is successful. <br>
 
 
 ### Parameters Server
-This allows the user to modify the infrequently used modifiable parameters.<br>
+The parameter server allows the user to check or modify the infrequently used modifiable parameters.<br>
 Since each actuator has a number of modifiable parameters, the parameter names on the server are arranged in the format of : <br>
 ```
 /INNFOS/Actuator/${ACTUATOR_ID}/${PARAMETER_NAME}
