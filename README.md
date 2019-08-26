@@ -13,7 +13,9 @@ If you have not already, follow the instructions on http://wiki.ros.org/ to inst
 ### Install
 This package is tested on an X86 system with Ubuntu 16.04 installed.
 
-Enter your catkin workspace's source directory.
+Enter your catkin workspace's source directory. 
+If you have workspaces that used the C++ `Ethernet Communication SDK`, it is recommended that you do NOT put this package in those workspaces.
+This package uses a modified version of `Ethernet Communication SDK` and will likely cause issues in this and your program. <br>
 You can clone the package with:
 ```
 $ git clone https://github.com/Rayckey/ActuatorController_ROS.git actuatorcontroller_ros
@@ -22,10 +24,12 @@ Then return to the root of your workspace and build the package
 ```
 $ catkin_make
 ```
-There's a chance that the package may fail on the first time it is built, if that happens, retry it couple times.
+There's a chance that the package may fail on the first time it is built depending on your system, if that happens, retry it couple times. <br>
+Remember that whenever you need to use the node/messages/services in a new terminal, you must first `source` at the root of workspace:
 ```
 $ source devel/setup.bash
 ```
+Alternatively, you can source in your `.bachrc` file, which will force the terminal to source every time it boots up.
 Now you're ready to use the package!
 
 
