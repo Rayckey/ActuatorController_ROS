@@ -94,7 +94,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES actuatorcontroller_ros
   CATKIN_DEPENDS message_generation roscpp std_msgs std_srvs
-  DEPENDS system_lib
+  #DEPENDS system_lib
 )
 
 ###########
