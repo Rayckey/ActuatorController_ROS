@@ -6,11 +6,11 @@ A ROS wrapper for INNFOS Actuator Controller
 
 
 
-# How to Install
-## ROS
+## How to Install
+### ROS
 If you have not already, follow the instructions on http://wiki.ros.org/ to install ROS version of your choice.
 
-## Install
+### Install
 This package is tested on an X86 system with Ubuntu 16.04 installed.
 
 Enter your catkin workspace's source directory.
@@ -31,7 +31,7 @@ Now you're ready to use the package!
 
 
 
-# Usage Example
+## Usage Example
 For a first time user, it is recommended to read through the INNFOS wiki page for the setup: https://innfos.github.io/wiki/en/#!index.md <br>
 You can start the ROS node as soon as the device is connected to the communication bridge. <br>
 
@@ -163,16 +163,16 @@ isSuccessful: True
 And that's the basics, you can check all the options in the following sections.
 
 
-# Launching the Node
+## Launching the Node
 There are a couple of ways to launch the nodes. The node will always have the basic functions, but the users may affect its performance by changing its parameters.
-## rosrun with default options
+### rosrun with default options
 To run the ros node separately and start actuators with the default options, as seen in the example
 ```
 $ roscore
 $ rosrun actuatorcontroller_ros innfos_actuator
 ```
 
-## roslaunch with modified options
+### roslaunch with modified options
 You can launch the node with custom parameters if you wish to change the performance of the controller. These launch files are mere examples and their effects can be combined.<br>
 ```
 $ roslaunch actuatorcontroller_ros innfos_no_param.launch
@@ -191,8 +191,8 @@ When this parameter is true, the controller will use a more efficient method whe
 
 Beware! These settings will not take effects if the node is already running! (i.e. If you started the node and then added the parameters it will not take effects! These parameters must be present at the start of the node for it to work. Alternatively, you can create your own launch files that combine these parameters.)
 
-# ROS Messages, Services & Parameters
-## Parameters of an INNFOS actuator
+## ROS Messages, Services & Parameters
+### Parameters of an INNFOS actuator
 The parameters of each actuator are separated into four groups: <br>
 1.Frequently used modifiable parameters<br>
 2.Frequently used unmodifiable parameters<br>
@@ -286,6 +286,6 @@ Note that any changes will need to be saved using the /INNFOS/ParametersSave ser
 If the assignment was unsuccessful, the parameter will be reverted on the server. <br>
 
 
-# Change logs
+## Change logs
 
 <table style="width:500px"><thead><tr style="background:PaleTurquoise"><th style="width:100px">Version number</th><th style="width:150px">Update time</th><th style="width:3800px">Update content</th></tr></thead><tbody><tr><td>v1.0.3</td><td>2019.08.26</td><td> More Examples</td></tr></thead><tbody><tr><td>v1.0.2</td><td>2019.08.21</td><td> Included an example in readme </td></tr></thead><tbody><tr><td>v1.0.1</td><td>2019.08.09</td><td>Added readme</td></tr></thead><tbody><tr><td>v1.0.0</td><td>2019.08.09</td><td>Node tested with actuators on Ubuntu 16.04 with ROS Luna, Stable release</td></tbody></table>
