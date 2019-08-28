@@ -164,6 +164,46 @@ Similar to the `/INNFOS/ZeroReset` service, it will return a boolean.
 ```
 isSuccessful: True
 ```
+Awesome possum. You've learnt all the basics, now let's do a something a little fancy. <br>
+You might have noticed that the actuator states are being broadcast via `joint_states` in the topic `INNFOS/actuator_states`. 
+If you wish to command an arbitrary number of actuators at the same time, you can also use `joint_states` to send out commands. <br>
+Let's get bring the long neglected actuator along:
+```
+$ rostopic pub -1 /INNFOS/setControlMode actuatorcontroller_ros/ActuatorModes "JointIDs: [2,5]
+ActuatorMode: 4" 
+```
+Here we set both the actuators to `Mode_Profile_Pos`, and proceed to boss them around:
+```
+$ rostopic pub /INNFOS/actuator_targets sensor_msgs/JointState "header:
+  seq: 0
+  stamp: {secs: 0, nsecs: 0}
+  frame_id: ''
+name: ['2', '5']
+position: [1,1]
+velocity: [0,0]
+effort: [0.0,0]" 
+```
+Now both the actuators have gone to position 1.0. <br>
+`joint_states` is a common message type used in a lot of ROS packages, so using this method may makes your integration easier. <br>
+You can control actuators with different modes in a single `joint_states`, if we set one of the actuator to `Mode_Profile_Vel`:
+```
+$ rostopic pub -1 /INNFOS/setControlMode actuatorcontroller_ros/ActuatorModes "JointIDs: [5]
+ActuatorMode: 5" 
+```
+We can then send out messages like this:
+```
+$ rostopic pub /INNFOS/actuator_targets sensor_msgs/JointState "header:
+  seq: 0
+  stamp: {secs: 0, nsecs: 0}
+  frame_id: ''
+name: ['2', '5']
+position: [2,0]
+velocity: [0,250]
+effort: [0.0,0]"
+```
+When the node receive a `joint_states` command, it will distinguish the active control mode of each actuators and only uses the correct target values from the messages. 
+So if your actuator is in mode `Mode_Cur`, it will not respond to its position commands. <br>
+
 And that's the basics, you can check all the options in the following sections.
 
 
@@ -227,13 +267,15 @@ Set the control mode for the designated actuators, you can check the available m
 #### /INNFOS/setTargetPosition (`ActuatorController_ROS::ActuatorCommand`)
 Set the target position for the designated actuator, will only have effects when the actuator is in the correct mode. <br>
 
-
 #### /INNFOS/setTargetVelocity (`ActuatorController_ROS::ActuatorCommand`)
 Set the target velocity for the designated actuator, will only have effects when the actuator is in the correct mode. <br>
 
-
 #### /INNFOS/setTargetCurrent (`ActuatorController_ROS::ActuatorCommand`)
 Set the target current for the designated actuator, will only have effects when the actuator is in the correct mode. <br>
+
+#### /INNFOS/actuator_targets (`sensor_msgs::JointState`)
+Receive bundled commands for positions, velocities and efforts, the preferred method for controlling a large number of actuators. The node will pull out the commands from the message based on the actuators nodes <br>
+
 
 
 ### Services
@@ -292,4 +334,4 @@ If the assignment was unsuccessful, the parameter will be reverted on the server
 
 ## Change logs
 
-<table style="width:500px"><thead><tr style="background:PaleTurquoise"><th style="width:100px">Version number</th><th style="width:150px">Update time</th><th style="width:3800px">Update content</th></tr></thead><tbody><tr><td>v1.0.3</td><td>2019.08.26</td><td> More Examples</td></tr></thead><tbody><tr><td>v1.0.2</td><td>2019.08.21</td><td> Included an example in readme </td></tr></thead><tbody><tr><td>v1.0.1</td><td>2019.08.09</td><td>Added readme</td></tr></thead><tbody><tr><td>v1.0.0</td><td>2019.08.09</td><td>Node tested with actuators on Ubuntu 16.04 with ROS Luna, Stable release</td></tbody></table>
+<table style="width:500px"><thead><tr style="background:PaleTurquoise"><th style="width:100px">Version number</th><th style="width:150px">Update time</th><th style="width:3800px">Update content</th></tr></thead><tbody><tr><td>v1.1.0</td><td>2019.08.27</td><td> Joint states commands added </td></tr></thead><tbody><tr><td>v1.0.3</td><td>2019.08.26</td><td> More Examples</td></tr></thead><tbody><tr><td>v1.0.2</td><td>2019.08.21</td><td> Included an example in readme </td></tr></thead><tbody><tr><td>v1.0.1</td><td>2019.08.09</td><td>Added readme</td></tr></thead><tbody><tr><td>v1.0.0</td><td>2019.08.09</td><td>Node tested with actuators on Ubuntu 16.04 with ROS Luna, Stable release</td></tbody></table>

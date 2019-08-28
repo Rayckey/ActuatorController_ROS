@@ -82,6 +82,8 @@ private:
 
     void subscribeSetControlMode(const actuatorcontroller_ros::ActuatorModes & msg);
 
+    void subscribeJointState(const sensor_msgs::JointState & msg);
+
 
     // service callback
     bool serviceAttributeQuery(actuatorcontroller_ros::AttributeQueryRequest & req,
@@ -142,6 +144,7 @@ private:
 	ros::Subscriber m_subTargetVelocity;
 	ros::Subscriber m_subTargetCurrent;
 	ros::Subscriber m_subControlMode;
+	ros::Subscriber m_subJointState;
 
 	
 	ros::ServiceServer m_serAttributeQuery;

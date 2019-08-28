@@ -35,6 +35,9 @@ ActuatorController_ROS::ActuatorController_ROS(){
     m_subControlMode = nh.subscribe("/INNFOS/setControlMode", 100,
                                       &ActuatorController_ROS::subscribeSetControlMode, this);
 
+    m_subJointState = nh.subscribe("/INNFOS/actuator_targets" , 100,
+            &ActuatorController_ROS::subscribeJointState, this);
+
 
     m_serAttributeQuery = nh.advertiseService("/INNFOS/AttributeQuery", &ActuatorController_ROS::serviceAttributeQuery, this);
     m_serGeneralQuery  = nh.advertiseService("/INNFOS/GeneralQuery", &ActuatorController_ROS::serviceGeneralQuery, this);
@@ -205,6 +208,67 @@ void ActuatorController_ROS::subscribeSetTargetCurrent(const actuatorcontroller_
     m_pController->setCurrent(uint8_t(msg.JointID) , msg.TargetValue);
 }
 
+
+
+void ActuatorController_ROS::subscribeJointState(const sensor_msgs::JointState & msg){
+
+    int num_of_joint = msg.name.size();
+
+    if (msg.name.size() != msg.effort.size() ||
+    msg.name.size() != msg.velocity.size() ||
+    msg.name.size() != msg.position.size()){
+        ROS_INFO("JOINT STATES COMMANDS DO NOT MATCH");
+        return;
+    }
+
+    for (uint8_t name_id = 0 ; name_id < num_of_joint ; name_id++){
+
+        uint8_t joint_id = stoi(msg.name[name_id].c_str());
+
+//        ROS_INFO("ID: [%d]", int(joint_id));
+
+        // process positions
+        if (m_pController->getActuatorMode(joint_id) == Actuator::Mode_Profile_Pos || m_pController->getActuatorMode(joint_id) == Actuator::Mode_Pos){
+            // It is in position mode
+            double cmd = msg.position[name_id];
+
+            if ( isnan(cmd) ){
+                // something is wrong, received nan command
+            } else {
+                m_pController->setPosition(joint_id, cmd);
+            }
+        }
+
+
+        // process velocities
+        if (m_pController->getActuatorMode(joint_id) == Actuator::Mode_Profile_Vel || m_pController->getActuatorMode(joint_id) == Actuator::Mode_Vel){
+            // It is in velocity mode
+            double cmd = msg.velocity[name_id];
+
+            if ( isnan(cmd)){
+                // something is wrong, received nan command
+            } else {
+                m_pController->setVelocity(joint_id, cmd);
+            }
+        }
+
+
+        // process currents
+        if (m_pController->getActuatorMode(joint_id) == Actuator::Mode_Cur ){
+            // It is in current mode
+            double cmd = msg.effort[name_id];
+
+            if ( isnan(cmd) ){
+                // something is wrong, received nan command
+            } else {
+                m_pController->setCurrent(joint_id, cmd);
+            }
+        }
+
+
+    }
+
+}
 void ActuatorController_ROS::subscribeSetControlMode(const actuatorcontroller_ros::ActuatorModes & msg){
 
     std::vector<uint8_t> temp_vec;
